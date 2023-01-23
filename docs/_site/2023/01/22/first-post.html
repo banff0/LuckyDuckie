@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Lab 1 Write Up | Ducks a driving</title>
+<meta name="generator" content="Jekyll v3.8.6" />
+<meta property="og:title" content="Lab 1 Write Up" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="In this lab we implemented the tools and setup to allow us to access the duckiebots using our computer, this included setting up the correct environments on our laptops (docker, github, ROS connection, duckitown terminal, ect.). We also learnt some of the key dts commands that allow us to interface with the duckiebots, drive command, camera command, ect. Another key step in this lab was to set up the duckiebots, though they came pre assembled we still needed to make sure to calibrate the bots, this included making sure the camera inputs were calibrated, the wheels were calibrated and the line recognition was set up correctly. We also set up some preferences on the duckiebot to make sure the gain and trim were correct for our purposes. Finally we learnt how to run code on the duckiebot that we had written on our laptops. Some of the challenges faced in this lab were after I had done all the set up and began the lane follow command the duckiebot worked fine the first time, but following that the next few subsequent tests resulted in the bot not following the lines at all. I resolved this issue by relcallibrating the wheel trim and this seemed to resolve the issue leading me to believe this was not an issue with the line recognition. The biggest challenge by far though was trying to get the dockerhub image working. My first issue was that I had not read that I needed to change the version we were using to arm64v8 which resulted in the download for opencv taking a very long time. Once I had made the appropriate adjustments I was able to install opencv with no issues. The next issue I encountered was trying to get the boilerplate code for accessing the duckiebot camera with opencv to work. This proved difficult even after consenting the github repo where they set up the gst pipeline() which seemed like it should have worked but did not." />
+<meta property="og:description" content="In this lab we implemented the tools and setup to allow us to access the duckiebots using our computer, this included setting up the correct environments on our laptops (docker, github, ROS connection, duckitown terminal, ect.). We also learnt some of the key dts commands that allow us to interface with the duckiebots, drive command, camera command, ect. Another key step in this lab was to set up the duckiebots, though they came pre assembled we still needed to make sure to calibrate the bots, this included making sure the camera inputs were calibrated, the wheels were calibrated and the line recognition was set up correctly. We also set up some preferences on the duckiebot to make sure the gain and trim were correct for our purposes. Finally we learnt how to run code on the duckiebot that we had written on our laptops. Some of the challenges faced in this lab were after I had done all the set up and began the lane follow command the duckiebot worked fine the first time, but following that the next few subsequent tests resulted in the bot not following the lines at all. I resolved this issue by relcallibrating the wheel trim and this seemed to resolve the issue leading me to believe this was not an issue with the line recognition. The biggest challenge by far though was trying to get the dockerhub image working. My first issue was that I had not read that I needed to change the version we were using to arm64v8 which resulted in the download for opencv taking a very long time. Once I had made the appropriate adjustments I was able to install opencv with no issues. The next issue I encountered was trying to get the boilerplate code for accessing the duckiebot camera with opencv to work. This proved difficult even after consenting the github repo where they set up the gst pipeline() which seemed like it should have worked but did not." />
+<link rel="canonical" href="http://localhost:4000/LuckyDuckie/2023/01/22/first-post.html" />
+<meta property="og:url" content="http://localhost:4000/LuckyDuckie/2023/01/22/first-post.html" />
+<meta property="og:site_name" content="Ducks a driving" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2023-01-22T00:00:00-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Lab 1 Write Up" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2023-01-22T00:00:00-07:00","datePublished":"2023-01-22T00:00:00-07:00","description":"In this lab we implemented the tools and setup to allow us to access the duckiebots using our computer, this included setting up the correct environments on our laptops (docker, github, ROS connection, duckitown terminal, ect.). We also learnt some of the key dts commands that allow us to interface with the duckiebots, drive command, camera command, ect. Another key step in this lab was to set up the duckiebots, though they came pre assembled we still needed to make sure to calibrate the bots, this included making sure the camera inputs were calibrated, the wheels were calibrated and the line recognition was set up correctly. We also set up some preferences on the duckiebot to make sure the gain and trim were correct for our purposes. Finally we learnt how to run code on the duckiebot that we had written on our laptops. Some of the challenges faced in this lab were after I had done all the set up and began the lane follow command the duckiebot worked fine the first time, but following that the next few subsequent tests resulted in the bot not following the lines at all. I resolved this issue by relcallibrating the wheel trim and this seemed to resolve the issue leading me to believe this was not an issue with the line recognition. The biggest challenge by far though was trying to get the dockerhub image working. My first issue was that I had not read that I needed to change the version we were using to arm64v8 which resulted in the download for opencv taking a very long time. Once I had made the appropriate adjustments I was able to install opencv with no issues. The next issue I encountered was trying to get the boilerplate code for accessing the duckiebot camera with opencv to work. This proved difficult even after consenting the github repo where they set up the gst pipeline() which seemed like it should have worked but did not.","headline":"Lab 1 Write Up","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/LuckyDuckie/2023/01/22/first-post.html"},"url":"http://localhost:4000/LuckyDuckie/2023/01/22/first-post.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/LuckyDuckie/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/LuckyDuckie/feed.xml" title="Ducks a driving" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/LuckyDuckie/">Ducks a driving</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/LuckyDuckie/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Lab 1 Write Up</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2023-01-22T00:00:00-07:00" itemprop="datePublished">Jan 22, 2023
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>
+        In this lab we implemented the tools and setup to allow us to access the duckiebots using our computer, this included setting up the correct environments on our laptops (docker, github, ROS connection, duckitown terminal, ect.). We also learnt some of the key dts commands that allow us to interface with the duckiebots, drive command, camera command, ect. Another key step in this lab was to set up the duckiebots, though they came pre assembled we still needed to make sure to calibrate the bots, this included making sure the camera inputs were calibrated, the
+        wheels were calibrated and the line recognition was set up correctly. We also set up some preferences on the duckiebot to make sure the gain and trim were correct for our purposes. Finally we learnt how to run code on the duckiebot that we had written on our laptops.
+</p>
+<p>
+        Some of the challenges faced in this lab were after I had done all the set up and began the lane follow command the duckiebot worked fine the first time, but following that the next few subsequent tests resulted in the bot not following the lines at all. I resolved this issue
+        by relcallibrating the wheel trim and this seemed to resolve the issue leading me to believe this was not an issue with the line recognition.
+        The biggest challenge by far though was trying to get the dockerhub image working. My first issue was that I had not read that I needed to change the version we were using to arm64v8 which resulted in the download for opencv taking a very long time. Once I had made the appropriate adjustments I was able to install opencv with no issues. The next issue I encountered was trying to get the boilerplate code for accessing the duckiebot camera with opencv to work. This proved difficult even after consenting the github repo where they set up the gst pipeline() which seemed like it should have worked but did not. 
+
+
+</p>
+
+<p>
+    In this lab we learnt how to access the duckiebots from our laptops and get them to run code we had written on our laptops, meaning that in the future we should be able to make them do rather cool things. We also learnt the basics of docker and how it allows us to work in a separate environment that is easily shareable to a separate device(such as a duckiebot).
+</p>
+
+<h2> Dashboard image </h2>
+<p> Sorry! I could'nt get the image embeded here, I hope to be more profficient with jekyll by next lab so my site should look a little nicer here is a link to the <a href="https://drive.google.com/file/d/1B91bwVNb5j3sig1g9VRmeKbYeoHKD7Jr/view?usp=share_link" target="_blank">image</a>: 
+</p>
+
+<h2> Drive for 2 meters </h2>
+<iframe width="420" height="315" src="https://youtu.be/BzEZb2VpFs4" frameborder="0"></iframe>
+
+<h2> Lane follow demo </h2>
+<iframe width="420" height="315" src="https://youtu.be/5u_FgfXBX1M" frameborder="0" allowfullscreen=""></iframe>
+
+  </div><a class="u-url" href="/LuckyDuckie/2023/01/22/first-post.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/LuckyDuckie/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Ducks a driving</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Ducks a driving</li><li><a class="u-email" href="mailto:jleng1@ualberta.ca">jleng1@ualberta.ca</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/banff0"><svg class="svg-icon"><use xlink:href="/LuckyDuckie/assets/minima-social-icons.svg#github"></use></svg> <span class="username">banff0</span></a></li><li><a href="https://www.twitter.com/N%2FA"><svg class="svg-icon"><use xlink:href="/LuckyDuckie/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">N/A</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>This site hosts all my lab submissions for CMPUT 412</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
