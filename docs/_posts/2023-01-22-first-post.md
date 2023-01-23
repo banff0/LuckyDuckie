@@ -28,6 +28,8 @@ txt: "kedm"
 
 <h2> Drive for 2 meters </h2>
 <iframe width="420" height="315" src="https://youtu.be/BzEZb2VpFs4" frameborder="0"></iframe>
+<p> <a href="https://youtu.be/BzEZb2VpFs4" target="_blank">Link</a> in case the above video does not work </p>
 
 <h2> Lane follow demo </h2>
 <iframe width="420" height="315" src="https://youtu.be/5u_FgfXBX1M" frameborder="0" allowfullscreen></iframe>
+<p> <a href="https://youtu.be/5u_FgfXBX1M" target="_blank">Link</a> in case the above video does not work </p>
