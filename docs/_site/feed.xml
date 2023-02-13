@@ -1,4 +1,128 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.6">Jekyll</generator><link href="http://localhost:4000/LuckyDuckie/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/LuckyDuckie/" rel="alternate" type="text/html" /><updated>2023-01-22T22:56:32-07:00</updated><id>http://localhost:4000/LuckyDuckie/feed.xml</id><title type="html">Ducks a driving</title><subtitle>This site hosts all my lab submissions for CMPUT 412</subtitle><entry><title type="html">Lab 1 Write Up</title><link href="http://localhost:4000/LuckyDuckie/2023/01/22/first-post.html" rel="alternate" type="text/html" title="Lab 1 Write Up" /><published>2023-01-22T00:00:00-07:00</published><updated>2023-01-22T00:00:00-07:00</updated><id>http://localhost:4000/LuckyDuckie/2023/01/22/first-post</id><content type="html" xml:base="http://localhost:4000/LuckyDuckie/2023/01/22/first-post.html">&lt;p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.6">Jekyll</generator><link href="http://localhost:4000/LuckyDuckie/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/LuckyDuckie/" rel="alternate" type="text/html" /><updated>2023-02-12T23:58:37-07:00</updated><id>http://localhost:4000/LuckyDuckie/feed.xml</id><title type="html">Ducks a driving</title><subtitle>This site hosts all my lab submissions for CMPUT 412</subtitle><entry><title type="html">Lab 2 Write Up</title><link href="http://localhost:4000/LuckyDuckie/2023/02/12/Lab-2-writeup.html" rel="alternate" type="text/html" title="Lab 2 Write Up" /><published>2023-02-12T00:00:00-07:00</published><updated>2023-02-12T00:00:00-07:00</updated><id>http://localhost:4000/LuckyDuckie/2023/02/12/Lab-2-writeup</id><content type="html" xml:base="http://localhost:4000/LuckyDuckie/2023/02/12/Lab-2-writeup.html">&lt;!-- &lt;h1&gt; Lab 2 Write Up &lt;/h1&gt; --&gt;
+
+&lt;p&gt;
+        In this lab we implemented the odometry of the duckiebot, as well as use the kinematics of the bot to get it to move in a specified pattern. The first step in doing this was to track how far we had gone in meters. To do this we got the number of ticks recorded by the wheels by subscribe to the topics /left_wheel_encoder_node/tick and /right_wheel_encoder_node/tick then using this data we were able to calculate the distance traveled by out bot by using the formula (2*pi*wheel_raduis*ticks)/135 for each of the wheels . Using those distances we were also able to track the angle of our robot by using the formula ((distance_right - distance_left) / (2 * axel_radius)). Putting these two things together we ended up with the vector for the robot frame (where for the duckiebot yr is always 0) setting the xr to be the distance traveled. In doing this an issue arose where the distance continually increased since the ticks had no way of distinguishing between forward and backward motion, to remedy this we tracked the direction of the wheel based on the velocities we set, and used this to compute the direction of movement of each wheel. In order to get the wheel to rotate at a set velocity we then needed to publish a “WheelsCmdStamped” message to the topic wheels_driver_node/wheels_cmd which has a subscriber that will set the wheel velocities on the physical robot. At this point I should note that Jonathan and I became partners towards the end of the lab, so we both completed the above functionality in slightly different manners, but ultimately decided to complete the lab using his codebase. The last thing that needed to be figured out was how to change the colour of the LED on the bot, so that we could indicate which state it was in. To do this Jonathan created a service proxy that was able to communicate with the led_emitter_node/set_pattern topic and give us control of the bot’s lights. 
+
+&lt;/p&gt;
+&lt;p&gt;
+        Once we knew where the bot was and how to move it we could use this to execute commands such as move forward 1 meter or rotate 180 degrees. To do this I implemented a function that would check if the robot had met the parameters required for the previous command, and if so we would then set the wheel velocity to the necessary speeds for the next command, mark the current distance and angle of the bot -- so that we could track how far the bot had to go until it reached the distance or angle required, and update the onboard LED to indicate the new command being executed. I then placed all the commands needed to complete the predetermined pattern in a list, with each command consisting of a dictionary that held all the information needed (when to finish the previous command and begin executing, the wheel speed required to complete the task, and the LED colour assigned to the command. Then the bot just traversed this list and executed the commands until the list was empty. 
+ 
+
+
+&lt;/p&gt;
+
+&lt;p&gt;
+    At this point a number of issues were encountered, firstly the bot was not moving in a straight line when the wheel speeds were set to the same value. To rectify this issue we set one wheel to have less power than the other, this straightened out the bot after some trial and error. The second issue was the bot kept on overshooting the goal destinations we set in the commands, either going past the expected distance, or over rotating. To rectify this we tried increasing the threshold on when we could say the bot was sufficiently close to an angle or position and begin executing the next command. This worked to some extent, but often resulted in an over correction where the bot would under rotate, or not move far enough. The best solution we found was to set the wheel velocities to be lower, then the slower moving bot was less likely to move past a goal before the bot could get the ticks, calculate the distance, and then publish the next velocity to the wheels. There was still an issue of the movement being rather unpredictable, and we suspected this might be because some momentum from the previous command was being carried over, but unaccounted for, resulting in the bot moving in an unpredicted manner. To test this we put a pause between each of the bots commands, and this resulted in much more predictable movement from the bot confirming our initial suspicions Since this yielded better results this pausing was left in the final codebase. Lastly we then took the robot frame that we had been working in and converted that to the world frame, using the inverse kinematics provided in class. 
+&lt;/p&gt;
+
+&lt;p&gt;
+    We tried to get the rosbag working but Jonathan and I ran out of time, and Huayie was unable to figure out how to do it as well. 
+
+&lt;/p&gt;
+
+&lt;h2&gt; Answers to Questions: &lt;/h2&gt;
+
+&lt;ul&gt;
+    &lt;li&gt;
+        To translate between robot frame and initial frame you set 
+        world_x = robot_x * cos(robot theta)
+        world_y = robot_y * cos(robot theta)
+        Wold_theta = robot_theta
+        Then for this example, since we started at x = 0.32, y = 0.32 we need to add 0.32 to both world_x and world_y
+    &lt;/li&gt;
+    &lt;li&gt;
+        To convert the location and theta of the initial position to the world frame you take robot_x which == 0, thus world_x and world_y are zero plus the 0.32 we add to account for the starting position, and then set the world theta to be the robot theta.
+    &lt;/li&gt;
+    &lt;li&gt;
+        There is a difference between the actual location of out bot, and the desired location since the robot's movement is not precise, so the wheels might slip, or there may be a loss in traction, this leads to the robot thinking it has moved when in reality it has not causing this difference. 
+    &lt;/li&gt;
+    &lt;li&gt;
+        The topic used to make the motor move is vehical_name/wheels_driver_node/wheels_cmd and the way we figured this out was by looking at the different topics, and then checking the information on ones with names dealing with wheels, and if the type had a structure that seemed to be in the correct format to make it move and there was a subscriber, we tried sending it a message to move the wheels.
+    &lt;/li&gt;
+    &lt;li&gt;
+        We used a speed of 0.5 for both wheels, an increase in speed led to a decrease in accuracy, and too low a speed led to the bot not being able to move under its own weight. 
+    &lt;/li&gt;
+    &lt;li&gt;
+        To track the angle rotated we used the formula: 
+        ((distance_right - distance_left) / (2 * axel_radius))
+        Where ditance_left/right was calculated as:
+            (2 * pi * wheel_radius * ticks) / 135
+    &lt;/li&gt;
+    &lt;li&gt;
+        To make the robot rotate we set the speed of the two wheels in opposite directions, resulting in neutral steering, thus to do this we used the same topic used to make the bot move forward (vehical_name/wheels_driver_node/wheels_cmd)
+    &lt;/li&gt;
+    &lt;li&gt;
+        To track the angle rotated we set a variable to 0 initially and then updated it to the rotation angle calculated above every time a new message was published to the wheel tick topic.
+    &lt;/li&gt;
+    &lt;li&gt;
+        To drive the robot in a circle we just need to set the velocity of the right, and left wheel to be different speeds in the same direction, then the ratio of these two speeds will lead to a different radius of the circle. 
+    &lt;/li&gt;
+    &lt;li&gt;
+        The final position of the robot was:
+        World_x = 7.414957177079178
+        World_y = 5.215506373748548
+        World_theta = 2.5376110196153103
+        This was not that close to the actual position of the robot.
+    &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2&gt; Images/Videos: &lt;/h2&gt;
+
+&lt;h1&gt; Screenshot of camera image view in my own topic &lt;/h1&gt;
+&lt;ul&gt;
+    &lt;p&gt;  This is an &lt;a href=&quot;/&quot; target=&quot;_blank&quot;&gt;image&lt;/a&gt; of the image that I published to my own topic seen through rqt_image, its exactly the same as the image from the compressed image topic, since that is what I subscribed to in order to get my image.
+    &lt;/p&gt;
+&lt;/ul&gt;
+
+&lt;h1&gt; Screenshot of code that shows how to acquire and send images using ros topics &lt;/h1&gt;
+&lt;ul&gt;
+    &lt;p&gt; This &lt;a href=&quot;https://drive.google.com/file/d/1iPElbq41SZmYjqkz8n4H5BleqFR76ehW/view?usp=sharing&quot; target=&quot;_blank&quot;&gt;image&lt;/a&gt; shows the code that allows us to communicate with a ros topic by subscribing to it, in this case an image topic, and then it publishes that image to a differnet topic so that it can be accessed by a different subscriber.
+    &lt;/p&gt;
+&lt;/ul&gt;
+
+&lt;h1&gt; Videos of my Duckiebot performing the task defined in part two &lt;/h1&gt;
+&lt;ul&gt;
+    &lt;!-- &lt;iframe width=&quot;420&quot; height=&quot;315&quot; src=&quot;https://youtu.be/BzEZb2VpFs4&quot; frameborder=&quot;0&quot;&gt;&lt;/iframe&gt; --&gt;
+    &lt;p&gt; This &lt;a href=&quot;https://drive.google.com/file/d/1wiUuJ0EwKTymeTDd-oVdGuFo8J_a2tH7/view?usp=share_link&quot; target=&quot;_blank&quot;&gt;video&lt;/a&gt; shows how we got the duckiebot to follow the set path given in the assignment, there is a lot of deviation from the expected path due to the imprefections of the duckiebot (loss of traction, gear slippage, ect) but for the most part it does what we want and is able to traverse a space given commends. Also here is another video where it performs some parts better than it did in the first video &lt;a href=&quot;https://drive.google.com/file/d/1wrnlKZkeCrh3XfT4JkjrmiMjoSXX707V/view?usp=share_link&quot; target=&quot;_blank&quot;&gt;video 2&lt;/a&gt;, and one more &lt;a href=&quot;https://drive.google.com/file/d/1whm4RT-zLn-frwvhL6uOuf0UWlyXqN7P/view?usp=share_link&quot; target=&quot;_blank&quot;&gt;video 3&lt;/a&gt; &lt;/p&gt;
+&lt;/ul&gt;
+
+&lt;h1&gt; Videos of some of the smaller exercises in part one &lt;/h1&gt;
+&lt;ul style=&quot;list-style-type: none&quot;&gt;
+    &lt;li&gt;
+        &lt;p&gt; This is the &lt;a href=&quot;https://drive.google.com/file/d/1wiUuJ0EwKTymeTDd-oVdGuFo8J_a2tH7/view?usp=share_link&quot; target=&quot;_blank&quot;&gt;move one meter then back video&lt;/a&gt; where the duckiebot moved one meter forward, then one back, following pre defined commands, and no human intervention. &lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li&gt;
+        &lt;p&gt; This is the &lt;a href=&quot;https://drive.google.com/file/d/1x2SlyQsovt5KSnkOuLvoV_w1oDzd071M/view?usp=share_link&quot; target=&quot;_blank&quot;&gt;rotate 90 degrees video&lt;/a&gt; where the duckiebot rotated 90 degrees following pre defined commands, and no human intervention. &lt;/p&gt;
+    &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1&gt; References: &lt;/h1&gt;
+&lt;p&gt;
+&lt;ul&gt;
+    &lt;li&gt;
+        &lt;a href=&quot;https://github.com/duckietown/dt-core&quot; target=&quot;_blank&quot;&gt;https://github.com/duckietown/dt-core&lt;/a&gt;
+    &lt;/li&gt;
+    &lt;li&gt;
+        &lt;a href=&quot;https://github.com/duckietown/dt-core/blob/daffy/packages/led_emitter/src/led_emitter_node.py&quot; target=&quot;_blank&quot;&gt;https://github.com/duckietown/dt-core/blob/daffy/packages/led_emitter/src/led_emitter_node.py&lt;/a&gt;
+    &lt;/li&gt;
+    &lt;li&gt;
+        &lt;a href=&quot;https://github.com/duckietown/template-ros&quot; target=&quot;_blank&quot;&gt;https://github.com/duckietown/template-ros&lt;/a&gt;
+    &lt;/li&gt;
+    &lt;li&gt;
+        &lt;a href=&quot;http://wiki.ros.org/ROS/Concepts&quot; target=&quot;_blank&quot;&gt;http://wiki.ros.org/ROS/Concepts&lt;/a&gt;
+    &lt;/li&gt;
+    &lt;li&gt;
+        &lt;a href=&quot;https://docs.duckietown.org/daffy/duckietown-robotics-development/out/dt_infrastructure.html&quot; target=&quot;_blank&quot;&gt;https://docs.duckietown.org/daffy/duckietown-robotics-development/out/dt_infrastructure.html&lt;/a&gt;
+    &lt;/li&gt;
+    &lt;li&gt;
+        &lt;a href=&quot;https://docs.duckietown.org/daffy/duckietown-robotics-development/out/odometry_modeling.html&quot; target=&quot;_blank&quot;&gt;https://docs.duckietown.org/daffy/duckietown-robotics-development/out/odometry_modeling.html&lt;/a&gt;
+    &lt;/li&gt;
+    &lt;li&gt;
+        &lt;a href=&quot;http://wiki.ros.org/rospy_tutorials/Tutorials/WritingImagePublisherSubscriber&quot; target=&quot;_blank&quot;&gt;http://wiki.ros.org/rospy_tutorials/Tutorials/WritingImagePublisherSubscriber&lt;/a&gt;
+    &lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;
+&lt;/p&gt;&lt;/p&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">Lab 1 Write Up</title><link href="http://localhost:4000/LuckyDuckie/2023/01/22/first-post.html" rel="alternate" type="text/html" title="Lab 1 Write Up" /><published>2023-01-22T00:00:00-07:00</published><updated>2023-01-22T00:00:00-07:00</updated><id>http://localhost:4000/LuckyDuckie/2023/01/22/first-post</id><content type="html" xml:base="http://localhost:4000/LuckyDuckie/2023/01/22/first-post.html">&lt;p&gt;
         In this lab we implemented the tools and setup to allow us to access the duckiebots using our computer, this included setting up the correct environments on our laptops (docker, github, ROS connection, duckitown terminal, ect.). We also learnt some of the key dts commands that allow us to interface with the duckiebots, drive command, camera command, ect. Another key step in this lab was to set up the duckiebots, though they came pre assembled we still needed to make sure to calibrate the bots, this included making sure the camera inputs were calibrated, the
         wheels were calibrated and the line recognition was set up correctly. We also set up some preferences on the duckiebot to make sure the gain and trim were correct for our purposes. Finally we learnt how to run code on the duckiebot that we had written on our laptops.
 &lt;/p&gt;
@@ -20,9 +144,11 @@
 
 &lt;h2&gt; Drive for 2 meters &lt;/h2&gt;
 &lt;iframe width=&quot;420&quot; height=&quot;315&quot; src=&quot;https://youtu.be/BzEZb2VpFs4&quot; frameborder=&quot;0&quot;&gt;&lt;/iframe&gt;
+&lt;p&gt; &lt;a href=&quot;https://youtu.be/BzEZb2VpFs4&quot; target=&quot;_blank&quot;&gt;Link&lt;/a&gt; in case the above video does not work &lt;/p&gt;
 
 &lt;h2&gt; Lane follow demo &lt;/h2&gt;
-&lt;iframe width=&quot;420&quot; height=&quot;315&quot; src=&quot;https://youtu.be/5u_FgfXBX1M&quot; frameborder=&quot;0&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;</content><author><name></name></author><summary type="html">In this lab we implemented the tools and setup to allow us to access the duckiebots using our computer, this included setting up the correct environments on our laptops (docker, github, ROS connection, duckitown terminal, ect.). We also learnt some of the key dts commands that allow us to interface with the duckiebots, drive command, camera command, ect. Another key step in this lab was to set up the duckiebots, though they came pre assembled we still needed to make sure to calibrate the bots, this included making sure the camera inputs were calibrated, the wheels were calibrated and the line recognition was set up correctly. We also set up some preferences on the duckiebot to make sure the gain and trim were correct for our purposes. Finally we learnt how to run code on the duckiebot that we had written on our laptops. Some of the challenges faced in this lab were after I had done all the set up and began the lane follow command the duckiebot worked fine the first time, but following that the next few subsequent tests resulted in the bot not following the lines at all. I resolved this issue by relcallibrating the wheel trim and this seemed to resolve the issue leading me to believe this was not an issue with the line recognition. The biggest challenge by far though was trying to get the dockerhub image working. My first issue was that I had not read that I needed to change the version we were using to arm64v8 which resulted in the download for opencv taking a very long time. Once I had made the appropriate adjustments I was able to install opencv with no issues. The next issue I encountered was trying to get the boilerplate code for accessing the duckiebot camera with opencv to work. This proved difficult even after consenting the github repo where they set up the gst pipeline() which seemed like it should have worked but did not.</summary></entry><entry><title type="html">Welcome to Jekyll!</title><link href="http://localhost:4000/LuckyDuckie/jekyll/update/2023/01/16/welcome-to-jekyll.html" rel="alternate" type="text/html" title="Welcome to Jekyll!" /><published>2023-01-16T14:09:29-07:00</published><updated>2023-01-16T14:09:29-07:00</updated><id>http://localhost:4000/LuckyDuckie/jekyll/update/2023/01/16/welcome-to-jekyll</id><content type="html" xml:base="http://localhost:4000/LuckyDuckie/jekyll/update/2023/01/16/welcome-to-jekyll.html">&lt;p&gt;You’ll find this post in your &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;_posts&lt;/code&gt; directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;jekyll serve&lt;/code&gt;, which launches a web server and auto-regenerates your site when a file is updated.&lt;/p&gt;
+&lt;iframe width=&quot;420&quot; height=&quot;315&quot; src=&quot;https://youtu.be/5u_FgfXBX1M&quot; frameborder=&quot;0&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;
+&lt;p&gt; &lt;a href=&quot;https://youtu.be/5u_FgfXBX1M&quot; target=&quot;_blank&quot;&gt;Link&lt;/a&gt; in case the above video does not work &lt;/p&gt;</content><author><name></name></author><summary type="html">In this lab we implemented the tools and setup to allow us to access the duckiebots using our computer, this included setting up the correct environments on our laptops (docker, github, ROS connection, duckitown terminal, ect.). We also learnt some of the key dts commands that allow us to interface with the duckiebots, drive command, camera command, ect. Another key step in this lab was to set up the duckiebots, though they came pre assembled we still needed to make sure to calibrate the bots, this included making sure the camera inputs were calibrated, the wheels were calibrated and the line recognition was set up correctly. We also set up some preferences on the duckiebot to make sure the gain and trim were correct for our purposes. Finally we learnt how to run code on the duckiebot that we had written on our laptops. Some of the challenges faced in this lab were after I had done all the set up and began the lane follow command the duckiebot worked fine the first time, but following that the next few subsequent tests resulted in the bot not following the lines at all. I resolved this issue by relcallibrating the wheel trim and this seemed to resolve the issue leading me to believe this was not an issue with the line recognition. The biggest challenge by far though was trying to get the dockerhub image working. My first issue was that I had not read that I needed to change the version we were using to arm64v8 which resulted in the download for opencv taking a very long time. Once I had made the appropriate adjustments I was able to install opencv with no issues. The next issue I encountered was trying to get the boilerplate code for accessing the duckiebot camera with opencv to work. This proved difficult even after consenting the github repo where they set up the gst pipeline() which seemed like it should have worked but did not.</summary></entry><entry><title type="html">Welcome to Jekyll!</title><link href="http://localhost:4000/LuckyDuckie/jekyll/update/2023/01/16/welcome-to-jekyll.html" rel="alternate" type="text/html" title="Welcome to Jekyll!" /><published>2023-01-16T14:09:29-07:00</published><updated>2023-01-16T14:09:29-07:00</updated><id>http://localhost:4000/LuckyDuckie/jekyll/update/2023/01/16/welcome-to-jekyll</id><content type="html" xml:base="http://localhost:4000/LuckyDuckie/jekyll/update/2023/01/16/welcome-to-jekyll.html">&lt;p&gt;You’ll find this post in your &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;_posts&lt;/code&gt; directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;jekyll serve&lt;/code&gt;, which launches a web server and auto-regenerates your site when a file is updated.&lt;/p&gt;
 
 &lt;p&gt;To add new posts, simply add a file in the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;_posts&lt;/code&gt; directory that follows the convention &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;YYYY-MM-DD-name-of-post.ext&lt;/code&gt; and includes the necessary front matter. Take a look at the source for this post to get an idea about how it works.&lt;/p&gt;
 

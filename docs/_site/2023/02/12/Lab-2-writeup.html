@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Lab 2 Write Up | Ducks a driving</title>
+<meta name="generator" content="Jekyll v3.8.6" />
+<meta property="og:title" content="Lab 2 Write Up" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="This site hosts all my lab submissions for CMPUT 412" />
+<meta property="og:description" content="This site hosts all my lab submissions for CMPUT 412" />
+<link rel="canonical" href="http://localhost:4000/LuckyDuckie/2023/02/12/Lab-2-writeup.html" />
+<meta property="og:url" content="http://localhost:4000/LuckyDuckie/2023/02/12/Lab-2-writeup.html" />
+<meta property="og:site_name" content="Ducks a driving" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2023-02-12T00:00:00-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Lab 2 Write Up" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2023-02-12T00:00:00-07:00","datePublished":"2023-02-12T00:00:00-07:00","description":"This site hosts all my lab submissions for CMPUT 412","headline":"Lab 2 Write Up","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/LuckyDuckie/2023/02/12/Lab-2-writeup.html"},"url":"http://localhost:4000/LuckyDuckie/2023/02/12/Lab-2-writeup.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/LuckyDuckie/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/LuckyDuckie/feed.xml" title="Ducks a driving" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/LuckyDuckie/">Ducks a driving</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/LuckyDuckie/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Lab 2 Write Up</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2023-02-12T00:00:00-07:00" itemprop="datePublished">Feb 12, 2023
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <!-- <h1> Lab 2 Write Up </h1> -->
+
+<p>
+        In this lab we implemented the odometry of the duckiebot, as well as use the kinematics of the bot to get it to move in a specified pattern. The first step in doing this was to track how far we had gone in meters. To do this we got the number of ticks recorded by the wheels by subscribe to the topics /left_wheel_encoder_node/tick and /right_wheel_encoder_node/tick then using this data we were able to calculate the distance traveled by out bot by using the formula (2*pi*wheel_raduis*ticks)/135 for each of the wheels . Using those distances we were also able to track the angle of our robot by using the formula ((distance_right - distance_left) / (2 * axel_radius)). Putting these two things together we ended up with the vector for the robot frame (where for the duckiebot yr is always 0) setting the xr to be the distance traveled. In doing this an issue arose where the distance continually increased since the ticks had no way of distinguishing between forward and backward motion, to remedy this we tracked the direction of the wheel based on the velocities we set, and used this to compute the direction of movement of each wheel. In order to get the wheel to rotate at a set velocity we then needed to publish a “WheelsCmdStamped” message to the topic wheels_driver_node/wheels_cmd which has a subscriber that will set the wheel velocities on the physical robot. At this point I should note that Jonathan and I became partners towards the end of the lab, so we both completed the above functionality in slightly different manners, but ultimately decided to complete the lab using his codebase. The last thing that needed to be figured out was how to change the colour of the LED on the bot, so that we could indicate which state it was in. To do this Jonathan created a service proxy that was able to communicate with the led_emitter_node/set_pattern topic and give us control of the bot’s lights. 
+
+</p>
+<p>
+        Once we knew where the bot was and how to move it we could use this to execute commands such as move forward 1 meter or rotate 180 degrees. To do this I implemented a function that would check if the robot had met the parameters required for the previous command, and if so we would then set the wheel velocity to the necessary speeds for the next command, mark the current distance and angle of the bot -- so that we could track how far the bot had to go until it reached the distance or angle required, and update the onboard LED to indicate the new command being executed. I then placed all the commands needed to complete the predetermined pattern in a list, with each command consisting of a dictionary that held all the information needed (when to finish the previous command and begin executing, the wheel speed required to complete the task, and the LED colour assigned to the command. Then the bot just traversed this list and executed the commands until the list was empty. 
+ 
+
+
+</p>
+
+<p>
+    At this point a number of issues were encountered, firstly the bot was not moving in a straight line when the wheel speeds were set to the same value. To rectify this issue we set one wheel to have less power than the other, this straightened out the bot after some trial and error. The second issue was the bot kept on overshooting the goal destinations we set in the commands, either going past the expected distance, or over rotating. To rectify this we tried increasing the threshold on when we could say the bot was sufficiently close to an angle or position and begin executing the next command. This worked to some extent, but often resulted in an over correction where the bot would under rotate, or not move far enough. The best solution we found was to set the wheel velocities to be lower, then the slower moving bot was less likely to move past a goal before the bot could get the ticks, calculate the distance, and then publish the next velocity to the wheels. There was still an issue of the movement being rather unpredictable, and we suspected this might be because some momentum from the previous command was being carried over, but unaccounted for, resulting in the bot moving in an unpredicted manner. To test this we put a pause between each of the bots commands, and this resulted in much more predictable movement from the bot confirming our initial suspicions Since this yielded better results this pausing was left in the final codebase. Lastly we then took the robot frame that we had been working in and converted that to the world frame, using the inverse kinematics provided in class. 
+</p>
+
+<p>
+    We tried to get the rosbag working but Jonathan and I ran out of time, and Huayie was unable to figure out how to do it as well. 
+
+</p>
+
+<h2> Answers to Questions: </h2>
+
+<ul>
+    <li>
+        To translate between robot frame and initial frame you set 
+        world_x = robot_x * cos(robot theta)
+        world_y = robot_y * cos(robot theta)
+        Wold_theta = robot_theta
+        Then for this example, since we started at x = 0.32, y = 0.32 we need to add 0.32 to both world_x and world_y
+    </li>
+    <li>
+        To convert the location and theta of the initial position to the world frame you take robot_x which == 0, thus world_x and world_y are zero plus the 0.32 we add to account for the starting position, and then set the world theta to be the robot theta.
+    </li>
+    <li>
+        There is a difference between the actual location of out bot, and the desired location since the robot's movement is not precise, so the wheels might slip, or there may be a loss in traction, this leads to the robot thinking it has moved when in reality it has not causing this difference. 
+    </li>
+    <li>
+        The topic used to make the motor move is vehical_name/wheels_driver_node/wheels_cmd and the way we figured this out was by looking at the different topics, and then checking the information on ones with names dealing with wheels, and if the type had a structure that seemed to be in the correct format to make it move and there was a subscriber, we tried sending it a message to move the wheels.
+    </li>
+    <li>
+        We used a speed of 0.5 for both wheels, an increase in speed led to a decrease in accuracy, and too low a speed led to the bot not being able to move under its own weight. 
+    </li>
+    <li>
+        To track the angle rotated we used the formula: 
+        ((distance_right - distance_left) / (2 * axel_radius))
+        Where ditance_left/right was calculated as:
+            (2 * pi * wheel_radius * ticks) / 135
+    </li>
+    <li>
+        To make the robot rotate we set the speed of the two wheels in opposite directions, resulting in neutral steering, thus to do this we used the same topic used to make the bot move forward (vehical_name/wheels_driver_node/wheels_cmd)
+    </li>
+    <li>
+        To track the angle rotated we set a variable to 0 initially and then updated it to the rotation angle calculated above every time a new message was published to the wheel tick topic.
+    </li>
+    <li>
+        To drive the robot in a circle we just need to set the velocity of the right, and left wheel to be different speeds in the same direction, then the ratio of these two speeds will lead to a different radius of the circle. 
+    </li>
+    <li>
+        The final position of the robot was:
+        World_x = 7.414957177079178
+        World_y = 5.215506373748548
+        World_theta = 2.5376110196153103
+        This was not that close to the actual position of the robot.
+    </li>
+</ul>
+
+<h2> Images/Videos: </h2>
+
+<h1> Screenshot of camera image view in my own topic </h1>
+<ul>
+    <p>  This is an <a href="/" target="_blank">image</a> of the image that I published to my own topic seen through rqt_image, its exactly the same as the image from the compressed image topic, since that is what I subscribed to in order to get my image.
+    </p>
+</ul>
+
+<h1> Screenshot of code that shows how to acquire and send images using ros topics </h1>
+<ul>
+    <p> This <a href="https://drive.google.com/file/d/1iPElbq41SZmYjqkz8n4H5BleqFR76ehW/view?usp=sharing" target="_blank">image</a> shows the code that allows us to communicate with a ros topic by subscribing to it, in this case an image topic, and then it publishes that image to a differnet topic so that it can be accessed by a different subscriber.
+    </p>
+</ul>
+
+<h1> Videos of my Duckiebot performing the task defined in part two </h1>
+<ul>
+    <!-- <iframe width="420" height="315" src="https://youtu.be/BzEZb2VpFs4" frameborder="0"></iframe> -->
+    <p> This <a href="https://drive.google.com/file/d/1wiUuJ0EwKTymeTDd-oVdGuFo8J_a2tH7/view?usp=share_link" target="_blank">video</a> shows how we got the duckiebot to follow the set path given in the assignment, there is a lot of deviation from the expected path due to the imprefections of the duckiebot (loss of traction, gear slippage, ect) but for the most part it does what we want and is able to traverse a space given commends. Also here is another video where it performs some parts better than it did in the first video <a href="https://drive.google.com/file/d/1wrnlKZkeCrh3XfT4JkjrmiMjoSXX707V/view?usp=share_link" target="_blank">video 2</a>, and one more <a href="https://drive.google.com/file/d/1whm4RT-zLn-frwvhL6uOuf0UWlyXqN7P/view?usp=share_link" target="_blank">video 3</a> </p>
+</ul>
+
+<h1> Videos of some of the smaller exercises in part one </h1>
+<ul style="list-style-type: none">
+    <li>
+        <p> This is the <a href="https://drive.google.com/file/d/1wiUuJ0EwKTymeTDd-oVdGuFo8J_a2tH7/view?usp=share_link" target="_blank">move one meter then back video</a> where the duckiebot moved one meter forward, then one back, following pre defined commands, and no human intervention. </p>
+    </li>
+    <li>
+        <p> This is the <a href="https://drive.google.com/file/d/1x2SlyQsovt5KSnkOuLvoV_w1oDzd071M/view?usp=share_link" target="_blank">rotate 90 degrees video</a> where the duckiebot rotated 90 degrees following pre defined commands, and no human intervention. </p>
+    </li>
+</ul>
+
+<h1> References: </h1>
+<p>
+<ul>
+    <li>
+        <a href="https://github.com/duckietown/dt-core" target="_blank">https://github.com/duckietown/dt-core</a>
+    </li>
+    <li>
+        <a href="https://github.com/duckietown/dt-core/blob/daffy/packages/led_emitter/src/led_emitter_node.py" target="_blank">https://github.com/duckietown/dt-core/blob/daffy/packages/led_emitter/src/led_emitter_node.py</a>
+    </li>
+    <li>
+        <a href="https://github.com/duckietown/template-ros" target="_blank">https://github.com/duckietown/template-ros</a>
+    </li>
+    <li>
+        <a href="http://wiki.ros.org/ROS/Concepts" target="_blank">http://wiki.ros.org/ROS/Concepts</a>
+    </li>
+    <li>
+        <a href="https://docs.duckietown.org/daffy/duckietown-robotics-development/out/dt_infrastructure.html" target="_blank">https://docs.duckietown.org/daffy/duckietown-robotics-development/out/dt_infrastructure.html</a>
+    </li>
+    <li>
+        <a href="https://docs.duckietown.org/daffy/duckietown-robotics-development/out/odometry_modeling.html" target="_blank">https://docs.duckietown.org/daffy/duckietown-robotics-development/out/odometry_modeling.html</a>
+    </li>
+    <li>
+        <a href="http://wiki.ros.org/rospy_tutorials/Tutorials/WritingImagePublisherSubscriber" target="_blank">http://wiki.ros.org/rospy_tutorials/Tutorials/WritingImagePublisherSubscriber</a>
+    </li>
+</ul>
+<p>
+</p></p>
+
+  </div><a class="u-url" href="/LuckyDuckie/2023/02/12/Lab-2-writeup.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/LuckyDuckie/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Ducks a driving</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Ducks a driving</li><li><a class="u-email" href="mailto:jleng1@ualberta.ca">jleng1@ualberta.ca</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/banff0"><svg class="svg-icon"><use xlink:href="/LuckyDuckie/assets/minima-social-icons.svg#github"></use></svg> <span class="username">banff0</span></a></li><li><a href="https://www.twitter.com/N%2FA"><svg class="svg-icon"><use xlink:href="/LuckyDuckie/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">N/A</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>This site hosts all my lab submissions for CMPUT 412</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
