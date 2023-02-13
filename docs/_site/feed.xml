@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.6">Jekyll</generator><link href="http://localhost:4000/LuckyDuckie/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/LuckyDuckie/" rel="alternate" type="text/html" /><updated>2023-02-13T11:22:24-07:00</updated><id>http://localhost:4000/LuckyDuckie/feed.xml</id><title type="html">Ducks a driving</title><subtitle>This site hosts all my lab submissions for CMPUT 412</subtitle><entry><title type="html">Lab 2 Write Up</title><link href="http://localhost:4000/LuckyDuckie/2023/02/12/Lab-2-writeup.html" rel="alternate" type="text/html" title="Lab 2 Write Up" /><published>2023-02-12T00:00:00-07:00</published><updated>2023-02-12T00:00:00-07:00</updated><id>http://localhost:4000/LuckyDuckie/2023/02/12/Lab-2-writeup</id><content type="html" xml:base="http://localhost:4000/LuckyDuckie/2023/02/12/Lab-2-writeup.html">&lt;!-- &lt;h1&gt; Lab 2 Write Up &lt;/h1&gt; --&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.6">Jekyll</generator><link href="http://localhost:4000/LuckyDuckie/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/LuckyDuckie/" rel="alternate" type="text/html" /><updated>2023-02-13T12:23:48-07:00</updated><id>http://localhost:4000/LuckyDuckie/feed.xml</id><title type="html">Ducks a driving</title><subtitle>This site hosts all my lab submissions for CMPUT 412</subtitle><entry><title type="html">Lab 2 Write Up</title><link href="http://localhost:4000/LuckyDuckie/2023/02/12/Lab-2-writeup.html" rel="alternate" type="text/html" title="Lab 2 Write Up" /><published>2023-02-12T00:00:00-07:00</published><updated>2023-02-12T00:00:00-07:00</updated><id>http://localhost:4000/LuckyDuckie/2023/02/12/Lab-2-writeup</id><content type="html" xml:base="http://localhost:4000/LuckyDuckie/2023/02/12/Lab-2-writeup.html">&lt;!-- &lt;h1&gt; Lab 2 Write Up &lt;/h1&gt; --&gt;
 
 &lt;p&gt;
         In this lab we implemented the odometry of the duckiebot, as well as use the kinematics of the bot to get it to move in a specified pattern. The first step in doing this was to track how far we had gone in meters. To do this we got the number of ticks recorded by the wheels by subscribe to the topics /left_wheel_encoder_node/tick and /right_wheel_encoder_node/tick then using this data we were able to calculate the distance traveled by out bot by using the formula (2*pi*wheel_raduis*ticks)/135 for each of the wheels . Using those distances we were also able to track the angle of our robot by using the formula ((distance_right - distance_left) / (2 * axel_radius)). Putting these two things together we ended up with the vector for the robot frame (where for the duckiebot yr is always 0) setting the xr to be the distance traveled. In doing this an issue arose where the distance continually increased since the ticks had no way of distinguishing between forward and backward motion, to remedy this we tracked the direction of the wheel based on the velocities we set, and used this to compute the direction of movement of each wheel. In order to get the wheel to rotate at a set velocity we then needed to publish a “WheelsCmdStamped” message to the topic wheels_driver_node/wheels_cmd which has a subscriber that will set the wheel velocities on the physical robot. At this point I should note that Jonathan and I became partners towards the end of the lab, so we both completed the above functionality in slightly different manners, but ultimately decided to complete the lab using his codebase. The last thing that needed to be figured out was how to change the colour of the LED on the bot, so that we could indicate which state it was in. To do this Jonathan created a service proxy that was able to communicate with the led_emitter_node/set_pattern topic and give us control of the bot’s lights. 
@@ -70,13 +70,13 @@
 
 &lt;h1&gt; Screenshot of camera image view in my own topic &lt;/h1&gt;
 &lt;ul&gt;
-    &lt;p&gt;  This is an &lt;a href=&quot;/&quot; target=&quot;_blank&quot;&gt;image&lt;/a&gt; of the image that I published to my own topic seen through rqt_image, its exactly the same as the image from the compressed image topic, since that is what I subscribed to in order to get my image.
+    &lt;p&gt;  This is an &lt;a href=&quot;https://drive.google.com/file/d/1XDtMp3fwPTiP-rHIKWO8881Wl9WSTcOd/view?usp=share_link&quot; target=&quot;_blank&quot;&gt;image&lt;/a&gt; of the image that I published to my own topic seen through rqt_image, its exactly the same as the image from the compressed image topic, since that is what I subscribed to in order to get my image.
     &lt;/p&gt;
 &lt;/ul&gt;
 
 &lt;h1&gt; Screenshot of code that shows how to acquire and send images using ros topics &lt;/h1&gt;
 &lt;ul&gt;
-    &lt;p&gt; This &lt;a href=&quot;https://drive.google.com/file/d/1iPElbq41SZmYjqkz8n4H5BleqFR76ehW/view?usp=sharing&quot; target=&quot;_blank&quot;&gt;image&lt;/a&gt; shows the code that allows us to communicate with a ros topic by subscribing to it, in this case an image topic, and then it publishes that image to a differnet topic so that it can be accessed by a different subscriber.
+    &lt;p&gt; This &lt;a href=&quot;https://drive.google.com/file/d/1yg21LQmskpOFAGkV4Rl7wxPDX1oDg6Y6/view?usp=share_link&quot; target=&quot;_blank&quot;&gt;image&lt;/a&gt; shows the code that allows us to communicate with a ros topic by subscribing to it, in this case an image topic, and then it publishes that image to a differnet topic so that it can be accessed by a different subscriber.
     &lt;/p&gt;
 &lt;/ul&gt;
 
@@ -99,30 +99,37 @@
 &lt;h1&gt; References: &lt;/h1&gt;
 &lt;p&gt;
 &lt;ul&gt;
-    &lt;li&gt;
-        &lt;a href=&quot;https://github.com/duckietown/dt-core&quot; target=&quot;_blank&quot;&gt;https://github.com/duckietown/dt-core&lt;/a&gt;
-    &lt;/li&gt;
-    &lt;li&gt;
-        &lt;a href=&quot;https://github.com/duckietown/dt-core/blob/daffy/packages/led_emitter/src/led_emitter_node.py&quot; target=&quot;_blank&quot;&gt;https://github.com/duckietown/dt-core/blob/daffy/packages/led_emitter/src/led_emitter_node.py&lt;/a&gt;
-    &lt;/li&gt;
-    &lt;li&gt;
-        &lt;a href=&quot;https://github.com/duckietown/template-ros&quot; target=&quot;_blank&quot;&gt;https://github.com/duckietown/template-ros&lt;/a&gt;
-    &lt;/li&gt;
-    &lt;li&gt;
-        &lt;a href=&quot;http://wiki.ros.org/ROS/Concepts&quot; target=&quot;_blank&quot;&gt;http://wiki.ros.org/ROS/Concepts&lt;/a&gt;
-    &lt;/li&gt;
-    &lt;li&gt;
-        &lt;a href=&quot;https://docs.duckietown.org/daffy/duckietown-robotics-development/out/dt_infrastructure.html&quot; target=&quot;_blank&quot;&gt;https://docs.duckietown.org/daffy/duckietown-robotics-development/out/dt_infrastructure.html&lt;/a&gt;
-    &lt;/li&gt;
-    &lt;li&gt;
-        &lt;a href=&quot;https://docs.duckietown.org/daffy/duckietown-robotics-development/out/odometry_modeling.html&quot; target=&quot;_blank&quot;&gt;https://docs.duckietown.org/daffy/duckietown-robotics-development/out/odometry_modeling.html&lt;/a&gt;
-    &lt;/li&gt;
-    &lt;li&gt;
-        &lt;a href=&quot;http://wiki.ros.org/rospy_tutorials/Tutorials/WritingImagePublisherSubscriber&quot; target=&quot;_blank&quot;&gt;http://wiki.ros.org/rospy_tutorials/Tutorials/WritingImagePublisherSubscriber&lt;/a&gt;
-    &lt;/li&gt;
+    
+        &lt;li&gt;
+            &lt;a href=&quot;https://github.com/duckietown/dt-core&quot; target=&quot;_blank&quot;&gt;https://github.com/duckietown/dt-core&lt;/a&gt; 
+        &lt;/li&gt;
+    
+        &lt;li&gt;
+            &lt;a href=&quot;https://github.com/duckietown/dt-core/blob/daffy/packages/led_emitter/src/led_emitter_node.py&quot; target=&quot;_blank&quot;&gt;https://github.com/duckietown/dt-core/blob/daffy/packages/led_emitter/src/led_emitter_node.py&lt;/a&gt; 
+        &lt;/li&gt;
+    
+        &lt;li&gt;
+            &lt;a href=&quot;https://github.com/duckietown/template-ros&quot; target=&quot;_blank&quot;&gt;https://github.com/duckietown/template-ros&lt;/a&gt; 
+        &lt;/li&gt;
+    
+        &lt;li&gt;
+            &lt;a href=&quot;http://wiki.ros.org/ROS/Concepts&quot; target=&quot;_blank&quot;&gt;http://wiki.ros.org/ROS/Concepts&lt;/a&gt; 
+        &lt;/li&gt;
+    
+        &lt;li&gt;
+            &lt;a href=&quot;https://docs.duckietown.org/daffy/duckietown-robotics-development/out/dt_infrastructure.html&quot; target=&quot;_blank&quot;&gt;https://docs.duckietown.org/daffy/duckietown-robotics-development/out/dt_infrastructure.html&lt;/a&gt; 
+        &lt;/li&gt;
+    
+        &lt;li&gt;
+            &lt;a href=&quot;https://docs.duckietown.org/daffy/duckietown-robotics-development/out/odometry_modeling.html&quot; target=&quot;_blank&quot;&gt;https://docs.duckietown.org/daffy/duckietown-robotics-development/out/odometry_modeling.html&lt;/a&gt; 
+        &lt;/li&gt;
+    
+        &lt;li&gt;
+            &lt;a href=&quot;http://wiki.ros.org/rospy_tutorials/Tutorials/WritingImagePublisherSubscriber&quot; target=&quot;_blank&quot;&gt;http://wiki.ros.org/rospy_tutorials/Tutorials/WritingImagePublisherSubscriber&lt;/a&gt; 
+        &lt;/li&gt;
+    
 &lt;/ul&gt;
-&lt;p&gt;
-&lt;/p&gt;&lt;/p&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">Lab 1 Write Up</title><link href="http://localhost:4000/LuckyDuckie/2023/01/22/first-post.html" rel="alternate" type="text/html" title="Lab 1 Write Up" /><published>2023-01-22T00:00:00-07:00</published><updated>2023-01-22T00:00:00-07:00</updated><id>http://localhost:4000/LuckyDuckie/2023/01/22/first-post</id><content type="html" xml:base="http://localhost:4000/LuckyDuckie/2023/01/22/first-post.html">&lt;p&gt;
+&lt;/p&gt;</content><author><name></name></author><summary type="html"></summary></entry><entry><title type="html">Lab 1 Write Up</title><link href="http://localhost:4000/LuckyDuckie/2023/01/22/first-post.html" rel="alternate" type="text/html" title="Lab 1 Write Up" /><published>2023-01-22T00:00:00-07:00</published><updated>2023-01-22T00:00:00-07:00</updated><id>http://localhost:4000/LuckyDuckie/2023/01/22/first-post</id><content type="html" xml:base="http://localhost:4000/LuckyDuckie/2023/01/22/first-post.html">&lt;p&gt;
         In this lab we implemented the tools and setup to allow us to access the duckiebots using our computer, this included setting up the correct environments on our laptops (docker, github, ROS connection, duckitown terminal, ect.). We also learnt some of the key dts commands that allow us to interface with the duckiebots, drive command, camera command, ect. Another key step in this lab was to set up the duckiebots, though they came pre assembled we still needed to make sure to calibrate the bots, this included making sure the camera inputs were calibrated, the
         wheels were calibrated and the line recognition was set up correctly. We also set up some preferences on the duckiebot to make sure the gain and trim were correct for our purposes. Finally we learnt how to run code on the duckiebot that we had written on our laptops.
 &lt;/p&gt;

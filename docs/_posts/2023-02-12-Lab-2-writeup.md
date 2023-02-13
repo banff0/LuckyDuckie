@@ -2,7 +2,13 @@
 layout: "post"
 title: "Lab 2 Write Up"
 img_url: "/docs/lab1/Dashboard.png"
-txt: "kedm"
+refrences: [https://github.com/duckietown/dt-core,
+            https://github.com/duckietown/dt-core/blob/daffy/packages/led_emitter/src/led_emitter_node.py,
+            https://github.com/duckietown/template-ros,
+            http://wiki.ros.org/ROS/Concepts,
+            https://docs.duckietown.org/daffy/duckietown-robotics-development/out/dt_infrastructure.html,
+            https://docs.duckietown.org/daffy/duckietown-robotics-development/out/odometry_modeling.html,
+            http://wiki.ros.org/rospy_tutorials/Tutorials/WritingImagePublisherSubscriber]
 ---
 
 <!-- <h1> Lab 2 Write Up </h1> -->
@@ -78,13 +84,13 @@ txt: "kedm"
 
 <h1> Screenshot of camera image view in my own topic </h1>
 <ul>
-    <p>  This is an <a href="/" target="_blank">image</a> of the image that I published to my own topic seen through rqt_image, its exactly the same as the image from the compressed image topic, since that is what I subscribed to in order to get my image.
+    <p>  This is an <a href="https://drive.google.com/file/d/1XDtMp3fwPTiP-rHIKWO8881Wl9WSTcOd/view?usp=share_link" target="_blank">image</a> of the image that I published to my own topic seen through rqt_image, its exactly the same as the image from the compressed image topic, since that is what I subscribed to in order to get my image.
     </p>
 </ul>
 
 <h1> Screenshot of code that shows how to acquire and send images using ros topics </h1>
 <ul>
-    <p> This <a href="https://drive.google.com/file/d/1iPElbq41SZmYjqkz8n4H5BleqFR76ehW/view?usp=sharing" target="_blank">image</a> shows the code that allows us to communicate with a ros topic by subscribing to it, in this case an image topic, and then it publishes that image to a differnet topic so that it can be accessed by a different subscriber.
+    <p> This <a href="https://drive.google.com/file/d/1yg21LQmskpOFAGkV4Rl7wxPDX1oDg6Y6/view?usp=share_link" target="_blank">image</a> shows the code that allows us to communicate with a ros topic by subscribing to it, in this case an image topic, and then it publishes that image to a differnet topic so that it can be accessed by a different subscriber.
     </p>
 </ul>
 
@@ -108,26 +114,11 @@ txt: "kedm"
 <h1> References: </h1>
 <p>
 <ul >
-    <li>
-        <a href="https://github.com/duckietown/dt-core" target="_blank">https://github.com/duckietown/dt-core</a>
-    </li>
-    <li>
-        <a href="https://github.com/duckietown/dt-core/blob/daffy/packages/led_emitter/src/led_emitter_node.py" target="_blank">https://github.com/duckietown/dt-core/blob/daffy/packages/led_emitter/src/led_emitter_node.py</a>
-    </li>
-    <li>
-        <a href="https://github.com/duckietown/template-ros" target="_blank">https://github.com/duckietown/template-ros</a>
-    </li>
-    <li>
-        <a href="http://wiki.ros.org/ROS/Concepts" target="_blank">http://wiki.ros.org/ROS/Concepts</a>
-    </li>
-    <li>
-        <a href="https://docs.duckietown.org/daffy/duckietown-robotics-development/out/dt_infrastructure.html" target="_blank">https://docs.duckietown.org/daffy/duckietown-robotics-development/out/dt_infrastructure.html</a>
-    </li>
-    <li>
-        <a href="https://docs.duckietown.org/daffy/duckietown-robotics-development/out/odometry_modeling.html" target="_blank">https://docs.duckietown.org/daffy/duckietown-robotics-development/out/odometry_modeling.html</a>
-    </li>
-    <li>
-        <a href="http://wiki.ros.org/rospy_tutorials/Tutorials/WritingImagePublisherSubscriber" target="_blank">http://wiki.ros.org/rospy_tutorials/Tutorials/WritingImagePublisherSubscriber</a>
-    </li>
+    {% for refrence in page.refrences %}
+        <li>
+            <a href="{{refrence}}" target="_blank">{{refrence}}</a> 
+        </li>
+    {% endfor %}
 </ul>
-<p>
+</p>
+
