@@ -91,13 +91,13 @@ txt: "kedm"
 <h1> Videos of my Duckiebot performing the task defined in part two </h1>
 <ul>
     <!-- <iframe width="420" height="315" src="https://youtu.be/BzEZb2VpFs4" frameborder="0"></iframe> -->
-    <p> This <a href="https://drive.google.com/file/d/1wiUuJ0EwKTymeTDd-oVdGuFo8J_a2tH7/view?usp=share_link" target="_blank">video</a> shows how we got the duckiebot to follow the set path given in the assignment, there is a lot of deviation from the expected path due to the imprefections of the duckiebot (loss of traction, gear slippage, ect) but for the most part it does what we want and is able to traverse a space given commends. Also here is another video where it performs some parts better than it did in the first video <a href="https://drive.google.com/file/d/1wrnlKZkeCrh3XfT4JkjrmiMjoSXX707V/view?usp=share_link" target="_blank">video 2</a>, and one more <a href="https://drive.google.com/file/d/1whm4RT-zLn-frwvhL6uOuf0UWlyXqN7P/view?usp=share_link" target="_blank">video 3</a> </p>
+    <p> This <a href="https://drive.google.com/file/d/1wiUuJ0EwKTymeTDd-oVdGuFo8J_a2tH7/view?usp=share_link" target="_blank">video</a> shows how we got the duckiebot to follow the set path given in the assignment, there is a lot of deviation from the expected path due to the imprefections of the duckiebot (loss of traction, gear slippage, ect) but for the most part it does what we want and is able to traverse a space given commends. Also here is another video where it performs some parts better than it did in the first video, with a little help from Jonathan <a href="https://drive.google.com/file/d/1wrnlKZkeCrh3XfT4JkjrmiMjoSXX707V/view?usp=share_link" target="_blank">video 2</a>, and one more where there is an example of the bot not being able to rotate under its own weight <a href="https://drive.google.com/file/d/1whm4RT-zLn-frwvhL6uOuf0UWlyXqN7P/view?usp=share_link" target="_blank">video 3</a> </p>
 </ul>
 
 <h1> Videos of some of the smaller exercises in part one </h1>
 <ul style="list-style-type: none">
     <li>
-        <p> This is the <a href="https://drive.google.com/file/d/1wiUuJ0EwKTymeTDd-oVdGuFo8J_a2tH7/view?usp=share_link" target="_blank">move one meter then back video</a> where the duckiebot moved one meter forward, then one back, following pre defined commands, and no human intervention. </p>
+        <p> This is the <a href="https://drive.google.com/file/d/1wueelVZc_WT6KOLfMjTpzYkspeM-Zty1/view?usp=share_link" target="_blank">move one meter then back video</a> where the duckiebot moved one meter forward, then one back, following pre defined commands, and no human intervention. </p>
     </li>
     <li>
         <p> This is the <a href="https://drive.google.com/file/d/1x2SlyQsovt5KSnkOuLvoV_w1oDzd071M/view?usp=share_link" target="_blank">rotate 90 degrees video</a> where the duckiebot rotated 90 degrees following pre defined commands, and no human intervention. </p>
