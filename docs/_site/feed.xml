@@ -1,4 +1,313 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.6">Jekyll</generator><link href="http://localhost:4000/LuckyDuckie/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/LuckyDuckie/" rel="alternate" type="text/html" /><updated>2023-02-13T12:23:48-07:00</updated><id>http://localhost:4000/LuckyDuckie/feed.xml</id><title type="html">Ducks a driving</title><subtitle>This site hosts all my lab submissions for CMPUT 412</subtitle><entry><title type="html">Lab 2 Write Up</title><link href="http://localhost:4000/LuckyDuckie/2023/02/12/Lab-2-writeup.html" rel="alternate" type="text/html" title="Lab 2 Write Up" /><published>2023-02-12T00:00:00-07:00</published><updated>2023-02-12T00:00:00-07:00</updated><id>http://localhost:4000/LuckyDuckie/2023/02/12/Lab-2-writeup</id><content type="html" xml:base="http://localhost:4000/LuckyDuckie/2023/02/12/Lab-2-writeup.html">&lt;!-- &lt;h1&gt; Lab 2 Write Up &lt;/h1&gt; --&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.6">Jekyll</generator><link href="http://localhost:4000/LuckyDuckie/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/LuckyDuckie/" rel="alternate" type="text/html" /><updated>2023-03-06T13:07:54-07:00</updated><id>http://localhost:4000/LuckyDuckie/feed.xml</id><title type="html">Ducks a driving</title><subtitle>This site hosts all my lab submissions for CMPUT 412</subtitle><entry><title type="html">Lab 3 Write Up</title><link href="http://localhost:4000/LuckyDuckie/2023/02/15/Lab-3.html" rel="alternate" type="text/html" title="Lab 3 Write Up" /><published>2023-02-15T00:00:00-07:00</published><updated>2023-02-15T00:00:00-07:00</updated><id>http://localhost:4000/LuckyDuckie/2023/02/15/Lab-3</id><content type="html" xml:base="http://localhost:4000/LuckyDuckie/2023/02/15/Lab-3.html">&lt;h1 id=&quot;exercise-3-report&quot;&gt;Exercise 3 Report&lt;/h1&gt;
+
+&lt;p&gt;In this lab we accomplished a lot! We used OpenCV to be able to read and ID apriltags which we then used to help move the Duckiebot using lane following and landmark recognition. We also utilized RViz to view where the Duckiebot thought it was in the robot frame compared to the world frame as well visualize the previous apriltag detections.
+&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;part-1&quot;&gt;Part 1&lt;/h2&gt;
+&lt;hr /&gt;
+&lt;h3 id=&quot;computer-vision&quot;&gt;Computer Vision&lt;/h3&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Below you can see a video of the Duckiebot detecting the apriltags. When this first started working, it was incredibly cool to see!&lt;/p&gt;
+
+&lt;iframe width=&quot;560&quot; height=&quot;315&quot; src=&quot;https://www.youtube.com/embed/fT2It-2V_pQ&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;
+&lt;figcaption align=&quot;center&quot;&gt;&lt;b&gt;Vid.1: Video for apriltag detection&lt;/b&gt;&lt;/figcaption&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;What does the apriltag library return to you for determining its position?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;The apriltag library returns an AprilTag object for us! This is incredibly helpful since we are able to use commands like &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;apriltag.corners&lt;/code&gt; to help draw the bounding box of the image.&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Which directions do the X, Y, Z values of your detection increase / decrease?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/LuckyDuckie/images_ex3/frame.png&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;figcaption align=&quot;center&quot;&gt;&lt;b&gt;Fig.1: Diagram to find tick rotation&lt;/b&gt;&lt;/figcaption&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;As stated in the above picture, apriltag detections will increase on the &lt;em&gt;Z&lt;/em&gt; and &lt;em&gt;X&lt;/em&gt; axis as they move in the positive direction. apriltag detections will decrease as they move in the negative direction on the &lt;em&gt;Y&lt;/em&gt; axis.&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;What frame orientation does the apriltag use?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;The camera frame is a translation and rotations away from the base of the robot frame so things change a little differently.&lt;/p&gt;
+
+&lt;p&gt;Skimming over some of the nuance of the camera being pointed down a bit, as the robot moves towards positive X in the robot frame, the apriltag gets closer - or the position in Z in the camera frame decreases.&lt;/p&gt;
+
+&lt;p&gt;If the robot rotates right, the apriltag detection will move towards negative x in the robot frame and vice-versa&lt;/p&gt;
+
+&lt;p&gt;The frame orientation can be found using the right hand rule. Utilizing the RHR, we are able to see a frame orientation similar to Fig.1&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Why are detections from far away prone to error?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Detections from far away can be prone to error due to a few reasons:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;The angle of the camera: Since the camera is tilted down, some distortion can occur when trying to detect tags&lt;/li&gt;
+  &lt;li&gt;The field of view: With a wide field of view an image can look distorted when compared to a smaller FOV&lt;/li&gt;
+  &lt;li&gt;The physical camera: The physical camera equipped on the Duckiebot is not the best quality. It also has a slight fisheye lens which can cause added distortion&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Why may you want to limit the rate of detections?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Since our Duckiebot is not equipped with very much onboard memory, it can get easily overloaded by trying to detect many objects in a small period of time. By limiting the number of detections, we can increase our operating efficeny and also speed up subsequent detections.&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;part-2&quot;&gt;Part 2&lt;/h2&gt;
+&lt;hr /&gt;
+&lt;h3 id=&quot;lane-following&quot;&gt;Lane Following&lt;/h3&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Below you can see a video of the Duckiebot utilizing the PID controller and lane following &lt;u&gt;American&lt;/u&gt; driver style.&lt;/p&gt;
+
+&lt;iframe width=&quot;560&quot; height=&quot;315&quot; src=&quot;https://www.youtube.com/embed/p1k3Xm_qgXU&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;
+&lt;figcaption align=&quot;center&quot;&gt;&lt;b&gt;Vid.2: Video for American style driver&lt;/b&gt;&lt;/figcaption&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Below you can see a video of the Duckiebot utilizing the PID controller and lane following &lt;u&gt;English&lt;/u&gt; driver style.&lt;/p&gt;
+
+&lt;iframe width=&quot;560&quot; height=&quot;315&quot; src=&quot;https://www.youtube.com/embed/xrq4UWQTJRE&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;
+&lt;figcaption align=&quot;center&quot;&gt;&lt;b&gt;Vid.3: Video for English style driver&lt;/b&gt;&lt;/figcaption&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;For both of the above videos, there are a few subtlties to take note of:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;A vertical blue line down the centre of the screen to visualize the centre of the camera on the Duckiebot&lt;/li&gt;
+  &lt;li&gt;Green rectangles to track the closest lane segment. If two rectangles are present, the closest one is ignored&lt;/li&gt;
+  &lt;li&gt;A green line connecting the green square to the vertical blue line to visualize approximately how far off we are from centre&lt;/li&gt;
+  &lt;li&gt;A red dot rapidly moving around the screen to visualize how much rotation the Duckiebot must make to stay on the correct side of the road&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;What is the error for your PID controller?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;This error is found by the following general equation:
+&lt;script type=&quot;math/tex&quot;&gt;\begin{equation}
+error = (x + (sizeratio*y)) - goal) * pixelscale
+\end{equation}&lt;/script&gt;&lt;/p&gt;
+
+&lt;p&gt;where:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;$x$ = the left most side of the closest dotted line&lt;/li&gt;
+  &lt;li&gt;$y$ = the top of closest dotted line divided by two&lt;/li&gt;
+  &lt;li&gt;$sizeratio$ = handles distance distortion. It creats a linear function describing how close the dotted line is vs how close the Duckiebot should be to it. This address the vanishing point problem.&lt;/li&gt;
+  &lt;li&gt;$goal$ = where the bot wants to be. Represented by a blue vertical line in the image&lt;/li&gt;
+  &lt;li&gt;$pixelscale$ = scales the error down to account for large error in pixels realative to a small error in angle&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;If your proportional controller did not work well alone, what could have caused this?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;For our purposes a proportional controller worked well. If our system contained momentum, this could have caused overshoot. However, adding a derivative term and accounting for derivative kick could solve the momentum problem.&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Does the D term help your controller logic? Why or why not?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Currently it does not help our controller since we did not have time to use it. Since our system does not consider a force like momentum, the P term is more than sufficent.&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Why or why not was the I term useful for your robot?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;While we did not implement the I term into this project it could have potentially been useful. Since the I term tries to compensate for error over time this could be useful when there is some error in the wheel encoders or slippage on the mat. If we did consider using an I term, we would also have to be wary of integral windup. To combat this, we would limit how large the I term could be.&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;part-3&quot;&gt;Part 3&lt;/h2&gt;
+&lt;hr /&gt;
+&lt;h3 id=&quot;localization-using-sensor-fusion&quot;&gt;Localization using Sensor Fusion&lt;/h3&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Below you can see view from RViz as we do a lap around the track. The camera feed, odometry frame and static apriltag frame is shown. In this video, the moving object is our Duckiebot being controlled manually. The static objects shown are the apriltags in our world frame.&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;iframe width=&quot;560&quot; height=&quot;315&quot; src=&quot;https://www.youtube.com/embed/l8UcIMxtJF0&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;
+&lt;figcaption align=&quot;center&quot;&gt;&lt;b&gt;Vid.4: Localization using static apriltags&lt;/b&gt;&lt;/figcaption&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Where did your odometry seem to drift the most? Why would that be?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;The most drift was seen when turning. The necessity for encoder precision is maximized in the turns since small errors can compound and cause large drift.&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Did adding the landmarks make it easier to understand where and when the odometry
+drifted?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Adding the landmarks made it significantly easier! Being able to visualize where the robot is in real-time is very beneficial.&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Show the generated transform tree graph, what is the root/parent frame?&lt;/strong&gt;&lt;/p&gt;
+&lt;object data=&quot;/LuckyDuckie/images_ex3/originalTransformTree.pdf&quot; width=&quot;150%&quot; height=&quot;500px&quot; type=&quot;application/pdf&quot;&gt;&lt;/object&gt;
+&lt;figcaption align=&quot;center&quot;&gt;&lt;b&gt;Fig.2: Original transform tree&lt;/b&gt;&lt;/figcaption&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;There are currently two root frames - the first being the “{robot_name}/WorldFrame” frame that we created for the odometry and apriltag locations. The second was the “{robot_name} footprint” frame that contained all of the components of the bot are children of. It made sense to set the parent of the footprint frame to be the odometry frame, since we then would be able to visualize all components of the robot relative to the apriltag locations.&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Move the wheels and make note of which join is moving. What type of joint is this?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;To determine this, first we set footprint’s parent frame to be the odometry frame. For some time we tried to figure out how to connect the footprint of the bot to the odometry frame so the bot is placed where it perceived itself to be in the world. Using static transforms (similar to the apriltags) made this job possible. Plus, we use this same method further on! Being able to utilize all of this helped us to find that almost every joint type is fixed but the wheel joints are continuous.&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;You may notice that the wheel frames rotate when you rotate the wheels, but the frames never move from the origin? Even if you launch your odometry node the Duckiebot’s frames do not move. Why is that?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;This was due to the two root nodes. We could set RViz to show the footprint of the Duckiebot OR show the WorldFrame with the odometry node. We need to connect the footprint to the odometry node for this to link properly.&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;What should the translation and rotation be from the odometry child to robot parent frame? In what situation would you have to use something different?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;In this case, we want to use a translation of $(0,0,0)$ and a rotation of $(0,0,0)$. The odometry node shows precisely where the bot thinks it is, so no rotation or translation is needed. For example, we would need a translation or rotation if the odometry node was publishing the robot frame 90° off of expected.&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;After creating this link generate a new transform tree graph. What is the new root/parent frame for your environment?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;The new root is just footprint. The key difference here is that the WorldFrame, apriltags, and odometry node are not appearing as a separate tree. We understand it to be that the “tf2_tools view_frames.py” script is hardcoded to assume the root is footprint, so even though footprint now has a parent odometry_node, it is not shown.&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Can a frame have two parents? What is your reasoning for this?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;No. The child frame needs to be positioned relative to the parent. If there are two parents that have two different positions, what does it mean to be $(+0.5, +0.5)$ transformed from both parents? This would give an inconclusive result or a bad coordinate. However, a parent can have multiple children; there’s no issue having multiple children reference a single parent’s location.&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Can an environment have more than one parent/root frame?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;It can, but it is highly recommended not to. Issue visualizing in RViz will occur as well as issues in testing and debugging the code.&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Show the newly generated transform tree graph, what is the new root/parent frame?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;object data=&quot;/LuckyDuckie/images_ex3/newTransformTree.pdf&quot; width=&quot;150%&quot; height=&quot;500px&quot; type=&quot;application/pdf&quot;&gt;&lt;/object&gt;
+&lt;figcaption align=&quot;center&quot;&gt;&lt;b&gt;Fig.3: New transform tree&lt;/b&gt;&lt;/figcaption&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;The new parent frame shown on the transform tree graph is footprint - but in reality the root is “WorldFrame”. You can imagine just drawing a connection between “odometry” and “footprint” in &lt;strong&gt;Enter figure number here!&lt;/strong&gt; - this is the true new tree.&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;Below you can see a video of the Duckiebot moving around the world frame with all robot frames attached to the moving odometry frame. Apriltag detections are also shown in the camera feed and visualized in RViz.&lt;/p&gt;
+
+&lt;iframe width=&quot;560&quot; height=&quot;315&quot; src=&quot;https://www.youtube.com/embed/gwi9RyucWMo&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;
+&lt;figcaption align=&quot;center&quot;&gt;&lt;b&gt;Vid.5: Localization using dynamic apriltags &lt;/b&gt;&lt;/figcaption&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;How far off are your detections from the static ground truth?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;As seen in Vid.5, our detections are not incredibly accurate. Being able to see the physical location of the apriltags on the camera as well as the perceived location on RViz lets us know we have a bit of work to do on detections&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;What are two factors that could cause this error?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;The code to convert the 2d bounding box + depth to the 3d coordinate from the camera doesn’t account for distortion of the lens.&lt;/li&gt;
+  &lt;li&gt;Inaccuracies converting from the camera frame such as not accounting for camera being pointed just slightly down.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;In the future we will add a video here of the Duckiebot moving around the world using lane following. Our sensor fusion node attempts to teleport the robot if an apriltag is found and to use odometry if no apriltag is detected. Our goal is to finish as close to the start as possible.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Is this a perfect system?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;While this isn’t a perfect system, it is not bad. By using apriltag teleportation with a combination of dead reckoning and computer vision, we can get a fairly good lane following system. There are some definite improvements and tweaks we hope to make in the future.&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;What are the causes for some of the errors?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Some causes for the error include:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Memory usage on the Duckiebot: In some scenarios, the Duckiebot seems to get a little bit overloaded and not have enough processing power to compute all the commands given to it at one time. When running manual control + RViz, we noticed some significant delay.&lt;/li&gt;
+  &lt;li&gt;Human tuning: Since we are tuning some constants by hand/inspection, the values are not optimal. Possibly by using machine learning we could fix this problem.&lt;/li&gt;
+  &lt;li&gt;Unaccounted distortion on camera: This can cause inaccuracies with our apriltag detections and our lane following.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;What other approaches could you use to improve localization?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;To improve localization we could:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Use multiple sensors or improved sensors. By using signals like GPS we can have a more accurate reading of where we are&lt;/li&gt;
+  &lt;li&gt;Use machine learning. By training our bot we can have it better estimate it’s position&lt;/li&gt;
+  &lt;li&gt;Combination approach. By using a combination of improved sensors, machine learning, better data etc we can improve our localization by a large magnitude.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
+&lt;hr /&gt;
+&lt;p&gt;&lt;a href=&quot;https://eclass.srv.ualberta.ca/pluginfile.php/9276727/mod_resource/content/3/Exercise%203.pdf&quot;&gt;Lab Manual&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://docsduckietown.org/daffy/duckietown-classical-roboticsduckietown-classical-robotics-ready-tablet.pdf&quot;&gt;Classical Robotics Architectures using Duckietownown&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://pyimagesearch.com/2020/11/02/apriltag-with-python/&quot;&gt;Apriltag with Python&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/duckietown/dt-core&quot;&gt;dt-core Library&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://docs.google.com/document/d/1bQfkR_tmwctFozEZlZkmojBZHkegscJPJVuw-IEXwI4/edit#&quot;&gt;CMPUT 412 Cheat Sheet&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://docs.duckietown.org/daffy/&quot;&gt;Duckietown Docs&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://docs.opencv.org/4.x/&quot;&gt;OpenCV Docs&lt;/a&gt;&lt;/p&gt;
+
+&lt;!-- &lt;h1&gt; References: &lt;/h1&gt;
+&lt;p&gt;
+&lt;ul&gt;
+    
+        &lt;li&gt;
+            &lt;a href=&quot;https://docs.duckietown.org/daffy/duckietown-classical-robotics/out/cra_basic_augmented_reality_exercise.html&quot; target=&quot;_blank&quot;&gt;https://docs.duckietown.org/daffy/duckietown-classical-robotics/out/cra_basic_augmented_reality_exercise.html&lt;/a&gt; 
+        &lt;/li&gt;
+    
+        &lt;li&gt;
+            &lt;a href=&quot;https://pyimagesearch.com/2020/11/02/apriltag-with-python/&quot; target=&quot;_blank&quot;&gt;https://pyimagesearch.com/2020/11/02/apriltag-with-python/&lt;/a&gt; 
+        &lt;/li&gt;
+    
+        &lt;li&gt;
+            &lt;a href=&quot;https://github.com/duckietown/dt-core/blob/6d8e99a5849737f86cab72b04fd2b449528226be/packages/ground_projection/src/ground_projection_node.py#L46&quot; target=&quot;_blank&quot;&gt;https://github.com/duckietown/dt-core/blob/6d8e99a5849737f86cab72b04fd2b449528226be/packages/ground_projection/src/ground_projection_node.py#L46&lt;/a&gt; 
+        &lt;/li&gt;
+    
+        &lt;li&gt;
+            &lt;a href=&quot;https://github.com/duckietown/lib-dt-apriltags/blob/master/dt_apriltags/apriltags.py&quot; target=&quot;_blank&quot;&gt;https://github.com/duckietown/lib-dt-apriltags/blob/master/dt_apriltags/apriltags.py&lt;/a&gt; 
+        &lt;/li&gt;
+    
+        &lt;li&gt;
+            &lt;a href=&quot;https://docs.opencv.org/4.x/da/d22/tutorial_py_canny.html&quot; target=&quot;_blank&quot;&gt;https://docs.opencv.org/4.x/da/d22/tutorial_py_canny.html&lt;/a&gt; 
+        &lt;/li&gt;
+    
+&lt;/ul&gt;
+&lt;/p&gt; --&gt;</content><author><name></name></author><summary type="html">Exercise 3 Report</summary></entry><entry><title type="html">Lab 2 Write Up</title><link href="http://localhost:4000/LuckyDuckie/2023/02/12/Lab-2-writeup.html" rel="alternate" type="text/html" title="Lab 2 Write Up" /><published>2023-02-12T00:00:00-07:00</published><updated>2023-02-12T00:00:00-07:00</updated><id>http://localhost:4000/LuckyDuckie/2023/02/12/Lab-2-writeup</id><content type="html" xml:base="http://localhost:4000/LuckyDuckie/2023/02/12/Lab-2-writeup.html">&lt;!-- &lt;h1&gt; Lab 2 Write Up &lt;/h1&gt; --&gt;
 
 &lt;p&gt;
         In this lab we implemented the odometry of the duckiebot, as well as use the kinematics of the bot to get it to move in a specified pattern. The first step in doing this was to track how far we had gone in meters. To do this we got the number of ticks recorded by the wheels by subscribe to the topics /left_wheel_encoder_node/tick and /right_wheel_encoder_node/tick then using this data we were able to calculate the distance traveled by out bot by using the formula (2*pi*wheel_raduis*ticks)/135 for each of the wheels . Using those distances we were also able to track the angle of our robot by using the formula ((distance_right - distance_left) / (2 * axel_radius)). Putting these two things together we ended up with the vector for the robot frame (where for the duckiebot yr is always 0) setting the xr to be the distance traveled. In doing this an issue arose where the distance continually increased since the ticks had no way of distinguishing between forward and backward motion, to remedy this we tracked the direction of the wheel based on the velocities we set, and used this to compute the direction of movement of each wheel. In order to get the wheel to rotate at a set velocity we then needed to publish a “WheelsCmdStamped” message to the topic wheels_driver_node/wheels_cmd which has a subscriber that will set the wheel velocities on the physical robot. At this point I should note that Jonathan and I became partners towards the end of the lab, so we both completed the above functionality in slightly different manners, but ultimately decided to complete the lab using his codebase. The last thing that needed to be figured out was how to change the colour of the LED on the bot, so that we could indicate which state it was in. To do this Jonathan created a service proxy that was able to communicate with the led_emitter_node/set_pattern topic and give us control of the bot’s lights. 
